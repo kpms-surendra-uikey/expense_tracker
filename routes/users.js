@@ -6,11 +6,26 @@ import { generateToken } from '../utils/index.js';
 const router = express.Router();
 
 // Define your routes here
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const { username, password, emailId, phoneNumber } = req.body;
     
     if (!username || !password || !emailId || !phoneNumber) {
         return res.json({message: 'username, passowrd, emailId, phoneNumber is mandatory'});
+    }
+
+    const usernameValidation = await User.findOne({ username });
+    if (usernameValidation) {
+        return res.json({message: 'Username already being used.'})
+    }
+
+    const emailIdValidation = await User.findOne({ emailId });
+    if (emailIdValidation) {
+        return res.json({message: 'Email id already being used.'})
+    }
+    
+    const phoneNumberValidation = await User.findOne({ phoneNumber });
+    if (phoneNumberValidation) {
+        return res.json({message: 'Phone number already being used.'})
     }
 
     const hashedPassword = bcrypt.hashSync(password, 12);
@@ -52,7 +67,7 @@ router.put('/update-password', async (req, res) => {
 
     const hashedPassword = bcrypt.hashSync(password, 12);
 
-    const updatedUser = await User.updateOne({ password: hashedPassword });
+    const updatedUser = await User.updateOne({ emailId }, { password: hashedPassword });
     res.clearCookie('accessToken');
 
     const token = generateToken(updatedUser);

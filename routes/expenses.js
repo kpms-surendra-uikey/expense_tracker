@@ -28,7 +28,24 @@ router.post('/', (req, res) => {
     }
 
     res.json({
-        message: 'Expense saved successfully.'
+        message: 'Expense saved successfully.',
+        expense: expense
+    });
+});
+
+// Define your routes here
+router.put('/:id', async (req, res) => {
+    const _id = req.params['id']; 
+    const expense = await Expense.findOne({ _id });
+    
+    if (!expense) {
+        return res.json({ message: `User done not have the expense having id ${_id}.` })
+    }
+
+    await Expense.updateOne({ _id }, { ...req.body });
+
+    res.json({
+        message: 'Expense updated successfully.'
     });
 });
 
