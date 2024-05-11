@@ -1,6 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import User from '../models/user.js';
+import Expense from '../models/expense.js';
 import { generateToken } from '../utils/index.js';
 
 const router = express.Router();
@@ -114,6 +115,23 @@ router.post('/logout', async (req, res) => {
 
     res.json({
         message: 'User logged out successfully.'
+    });
+});
+
+// delete the particular user
+router.delete('/:emailId', async (req, res) => {
+    const emailId = req.params['emailId']; 
+    const user = await User.findOne({ emailId });
+    
+    if (!user) {
+        return res.json({ message: `User done not have the expense having id ${_id}.` })
+    }
+
+    await Expense.deleteMany({ userId: user._id });
+
+    await User.deleteOne({ emailId });
+    res.json({
+        message: 'User deleted successfully.'
     });
 });
 

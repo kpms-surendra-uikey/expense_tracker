@@ -49,7 +49,36 @@ router.put('/:id', async (req, res) => {
     });
 });
 
-// Define your routes here
+// fetch the details of the particular expense
+router.get('/:id', async (req, res) => {
+    const _id = req.params['id']; 
+    const expense = await Expense.findOne({ _id });
+    
+    if (!expense) {
+        return res.json({ message: `User done not have the expense having id ${_id}.` })
+    }
+
+    res.json({
+        expense
+    });
+});
+
+// delete the particular expense
+router.delete('/:id', async (req, res) => {
+    const _id = req.params['id']; 
+    const expense = await Expense.findOne({ _id });
+    
+    if (!expense) {
+        return res.json({ message: `User done not have the expense having id ${_id}.` })
+    }
+
+    await Expense.deleteOne({ _id });
+    res.json({
+        message: 'Expense deleted successfully.'
+    });
+});
+
+// fetch all the expenses
 router.get('/', async (req, res) => {
     const user = req.user;
     const expenses = await Expense.find({ userId: user.userId });
